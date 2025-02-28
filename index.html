@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>阿坝州云硕信息技术有限公司-应用市场</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="logo.png" type="image/png">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-left">
+                <img src="logo.png" alt="公司logo" class="header-logo">
+                <h1>阿坝州云硕信息技术有限公司-应用市场</h1>
+            </div>
+            <div class="header-right">
+                <div class="search-bar">
+                    <div class="search-input-group">
+                        <input type="text" id="searchInput" placeholder="搜索应用..." onkeypress="if(event.key === 'Enter') searchApps()">
+                        <button class="btn search-btn" onclick="searchApps()">搜索</button>
+                    </div>
+                </div>
+                <button class="btn" onclick="openUploadModal()">上传应用</button>
+            </div>
+        </header>
+
+        <section class="app-section" id="appSection">
+            <div class="app-grid" id="appGrid"></div>
+        </section>
+
+        <div id="uploadModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close" onclick="closeUploadModal()">&times;</span>
+                <div class="modal-body">
+                    <h2 class="modal-title">上传新应用</h2>
+                    <div class="form-group">
+                        <label>应用名称</label>
+                        <input type="text" id="appName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>应用简介</label>
+                        <input type="text" id="appDescription" required>
+                    </div>
+                    <div class="form-group">
+                        <label>应用图标</label>
+                        <input type="text" id="appIcon" required>
+                        <div class="icon-search-section">
+                            <div class="icon-search-input">
+                                <input type="text" id="iconSearchInput" placeholder="搜索图标...">
+                                <button onclick="searchIcons()">搜索</button>
+                            </div>
+                            <div id="iconLoadingSpinner" class="loading-spinner"></div>
+                            <div id="iconGrid" class="icon-grid"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>下载地址</label>
+                        <input type="text" id="appDownloadUrl" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" onclick="submitApp()">确认</button>
+                    <button class="btn" onclick="closeUploadModal()">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { openUploadModal, closeUploadModal, uploadApp, downloadApp, deleteApp, searchApps, searchIcons, selectIcon } from './app.js';
+        import { apps as defaultApps } from './data.js';
+
+        // 设置默认应用数据到全局作用域
+        window.defaultApps = defaultApps;
+
+        // 将函数暴露到全局作用域
+        window.openUploadModal = openUploadModal;
+        window.closeUploadModal = closeUploadModal;
+        window.submitApp = uploadApp;
+        window.downloadApp = downloadApp;
+        window.deleteApp = deleteApp;
+        window.searchApps = searchApps;
+        window.searchIcons = searchIcons;
+        window.selectIcon = selectIcon;
+    </script>
+</body>
+</html>
