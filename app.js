@@ -37,7 +37,7 @@ function closeUploadModal() {
 }
 
 // 上传应用
-function submitApp() {
+async function submitApp() {
     if (!isAuthenticated) {
         return;
     }
@@ -125,21 +125,24 @@ function downloadApp(appName) {
 
 // 删除应用
 async function deleteApp(appName) {
-    if (!isAuthenticated) {
-        const isValid = await verifyPassword('delete');
-        if (!isValid) {
-            alert('密码错误！');
-            return;
-        }
-        isAuthenticated = true;
+    const isValid = await verifyPassword('delete');
+    if (!isValid) {
+        alert('密码错误！');
+        return;
     }
-    
-    const index = apps.findIndex(app => app.name === appName);
-    if (index !== -1) {
-        apps.splice(index, 1);
-        saveAppsToStorage();
-        renderApps(apps);
-        alert(`应用 ${appName} 已删除`);
+
+    try {
+        const response = await fetch(`http://localhost:3000/api/apps/${appName}`, {
+            method: 'DELETE'
+        });
+        if (!response.ok) {
+            throw new Error('删除应用失败');
+        }
+        await loadAppsFromServer(); // 重新加载最新数据
+        alert('应用删除成功！');
+    } catch (error) {
+        console.error('删除应用失败:', error);
+        alert('删除应用失败，请检查网络连接');
     }
 }
 
@@ -238,5 +241,4 @@ export {
 
 // 初始化
 document.getElementById('appSection').style.display = 'block';
-loadAppsFromStorage();
-renderApps(apps);
+loadAppsFromServer();
