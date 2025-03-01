@@ -11,11 +11,16 @@ const getBaseUrl = () => {
 async function loadAppsFromServer() {
     try {
         const response = await fetch(`${getBaseUrl()}/api/apps`);
-        apps = await response.json();
-        renderApps(apps);
+        if (!response.ok) {
+            throw new Error('加载应用数据失败');
+        }
+        const data = await response.json();
+        apps = data; // 更新全局变量
+        renderApps(apps); // 重新渲染页面
     } catch (error) {
         console.error('加载应用数据失败:', error);
         apps = [];
+        renderApps(apps); // 即使出错也要渲染空列表
     }
 }
 
@@ -32,10 +37,12 @@ async function saveAppToServer(newApp) {
         if (!response.ok) {
             throw new Error('保存应用失败');
         }
+        const result = await response.json();
         await loadAppsFromServer(); // 重新加载数据
+        return result;
     } catch (error) {
         console.error('保存应用数据失败:', error);
-        alert('保存应用数据失败！');
+        throw error;
     }
 }
 
@@ -73,15 +80,19 @@ async function submitApp() {
         uploadTime: new Date().toLocaleDateString()
     };
 
-    await saveAppToServer(newApp);
-    closeUploadModal();
-    alert('应用上传成功！');
+    try {
+        await saveAppToServer(newApp);
+        closeUploadModal();
+        alert('应用上传成功！');
 
-    // 清空表单
-    document.getElementById('appName').value = '';
-    document.getElementById('appDescription').value = '';
-    document.getElementById('appIcon').value = '';
-    document.getElementById('appDownloadUrl').value = '';
+        // 清空表单
+        document.getElementById('appName').value = '';
+        document.getElementById('appDescription').value = '';
+        document.getElementById('appIcon').value = '';
+        document.getElementById('appDownloadUrl').value = '';
+    } catch (error) {
+        alert('保存应用数据失败！');
+    }
 }
 
 // 密码验证
