@@ -16,7 +16,12 @@ app.get('/api/apps', async (req, res) => {
         res.json({ success: true, data: apps });
     } catch (error) {
         console.error('获取应用数据失败:', error);
-        res.status(500).json({ success: false, message: `获取应用数据失败: ${error.message}` });
+        // 确保返回格式化的JSON响应
+        res.status(500).json({
+            success: false,
+            error: 'database_error',
+            message: '数据库连接失败，请确保环境变量已正确配置'
+        });
     }
 });
 
