@@ -39,16 +39,34 @@ export async function connectToDatabase() {
 }
 
 export async function getAllApps() {
-    const { db } = await connectToDatabase();
-    return await db.collection('apps').find({}).toArray();
+    try {
+        const { db } = await connectToDatabase();
+        const apps = await db.collection('apps').find({}).toArray();
+        return apps;
+    } catch (error) {
+        console.error('获取应用列表失败:', error);
+        throw new Error(`获取应用列表失败: ${error.message}`);
+    }
 }
 
 export async function addApp(app) {
-    const { db } = await connectToDatabase();
-    return await db.collection('apps').insertOne(app);
+    try {
+        const { db } = await connectToDatabase();
+        const result = await db.collection('apps').insertOne(app);
+        return result;
+    } catch (error) {
+        console.error('添加应用失败:', error);
+        throw new Error(`添加应用失败: ${error.message}`);
+    }
 }
 
 export async function deleteApp(appName) {
-    const { db } = await connectToDatabase();
-    return await db.collection('apps').deleteOne({ name: appName });
+    try {
+        const { db } = await connectToDatabase();
+        const result = await db.collection('apps').deleteOne({ name: appName });
+        return result;
+    } catch (error) {
+        console.error('删除应用失败:', error);
+        throw new Error(`删除应用失败: ${error.message}`);
+    }
 }

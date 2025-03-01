@@ -11,10 +11,24 @@ const getBaseUrl = () => {
 async function loadAppsFromServer() {
     try {
         const response = await fetch(`${getBaseUrl()}/api/apps`);
-        apps = await response.json();
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || '服务器错误');
+        }
+        const data = await response.json();
+        if (!data.success) {
+            throw new Error(data.message || '获取数据失败');
+        }
+        apps = data.data;
         renderApps(apps);
     } catch (error) {
         console.error('加载应用数据失败:', error);
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'error-message';
+        errorMessage.textContent = `加载应用失败: ${error.message}`;
+        const appGrid = document.getElementById('appGrid');
+        appGrid.innerHTML = '';
+        appGrid.appendChild(errorMessage);
         apps = [];
     }
 }

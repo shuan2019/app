@@ -13,10 +13,10 @@ app.use(express.json());
 app.get('/api/apps', async (req, res) => {
     try {
         const apps = await getAllApps();
-        res.json(apps);
+        res.json({ success: true, data: apps });
     } catch (error) {
         console.error('获取应用数据失败:', error);
-        res.status(500).json({ message: `获取应用数据失败: ${error.message}` });
+        res.status(500).json({ success: false, message: `获取应用数据失败: ${error.message}` });
     }
 });
 
@@ -25,10 +25,10 @@ app.post('/api/apps', async (req, res) => {
     try {
         const newApp = req.body;
         await addApp(newApp);
-        res.json({ message: '应用添加成功', app: newApp });
+        res.json({ success: true, message: '应用添加成功', app: newApp });
     } catch (error) {
         console.error('添加应用失败:', error);
-        res.status(500).json({ message: `添加应用失败: ${error.message}` });
+        res.status(500).json({ success: false, message: `添加应用失败: ${error.message}` });
     }
 });
 
@@ -39,14 +39,14 @@ app.delete('/api/apps/:name', async (req, res) => {
         const result = await deleteApp(appName);
         
         if (result.deletedCount === 0) {
-            res.status(404).json({ message: '应用不存在' });
+            res.status(404).json({ success: false, message: '应用不存在' });
             return;
         }
         
-        res.json({ message: '应用删除成功' });
+        res.json({ success: true, message: '应用删除成功' });
     } catch (error) {
         console.error('删除应用失败:', error);
-        res.status(500).json({ message: `删除应用失败: ${error.message}` });
+        res.status(500).json({ success: false, message: `删除应用失败: ${error.message}` });
     }
 });
 
