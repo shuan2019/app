@@ -16,7 +16,7 @@ app.get('/api/apps', async (req, res) => {
         res.json(apps);
     } catch (error) {
         console.error('获取应用数据失败:', error);
-        res.status(500).json({ message: '获取应用数据失败' });
+        res.status(500).json({ message: `获取应用数据失败: ${error.message}` });
     }
 });
 
@@ -28,7 +28,7 @@ app.post('/api/apps', async (req, res) => {
         res.json({ message: '应用添加成功', app: newApp });
     } catch (error) {
         console.error('添加应用失败:', error);
-        res.status(500).json({ message: '添加应用失败' });
+        res.status(500).json({ message: `添加应用失败: ${error.message}` });
     }
 });
 
@@ -46,7 +46,7 @@ app.delete('/api/apps/:name', async (req, res) => {
         res.json({ message: '应用删除成功' });
     } catch (error) {
         console.error('删除应用失败:', error);
-        res.status(500).json({ message: '删除应用失败' });
+        res.status(500).json({ message: `删除应用失败: ${error.message}` });
     }
 });
 

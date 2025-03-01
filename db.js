@@ -18,12 +18,23 @@ export async function connectToDatabase() {
     }
 
     try {
-        client = await MongoClient.connect(uri);
+        if (!uri) {
+            throw new Error('MongoDB连接URI未设置，请检查环境变量MONGODB_URI');
+        }
+        if (!dbName) {
+            throw new Error('MongoDB数据库名未设置，请检查环境变量MONGODB_DB_NAME');
+        }
+
+        client = await MongoClient.connect(uri, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            serverSelectionTimeoutMS: 5000
+        });
         console.log('成功连接到MongoDB数据库');
         return { db: client.db(dbName), client };
     } catch (error) {
         console.error('连接数据库失败:', error);
-        throw error;
+        throw new Error(`数据库连接失败: ${error.message}`);
     }
 }
 
