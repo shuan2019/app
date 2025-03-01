@@ -1,14 +1,6 @@
 {
   "apps": [
     {
-      "name": "QQ9",
-      "description": "qq",
-      "icon": "https://iconsapi.com/65e9509fe4b02f62633d4b02.svg",
-      "downloadUrl": "https://iconsapi.com/5ee26744e4b0b788a9335bd3.svg",
-      "size": "未知",
-      "uploadTime": "2025/3/1"
-    },
-    {
       "name": "微信",
       "description": "微信",
       "icon": "https://iconsapi.com/5ee2828fe4b0b788a9352c4d.svg",
@@ -17,10 +9,10 @@
       "uploadTime": "2025/3/1"
     },
     {
-      "name": "爱奇艺",
-      "description": "爱奇艺",
-      "icon": "https://iconsapi.com/61f0ad97e4b06f79691807df.svg",
-      "downloadUrl": "https://iconsapi.com/61f0ad97e4b06f79691807df.svg",
+      "name": "QQ977",
+      "description": "qq",
+      "icon": "https://iconsapi.com/65e9509fe4b02f62633d4b02.svg",
+      "downloadUrl": "https://iconsapi.com/5ee26744e4b0b788a9335bd3.svg",
       "size": "未知",
       "uploadTime": "2025/3/1"
     }

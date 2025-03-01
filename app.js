@@ -11,16 +11,11 @@ const getBaseUrl = () => {
 async function loadAppsFromServer() {
     try {
         const response = await fetch(`${getBaseUrl()}/api/apps`);
-        if (!response.ok) {
-            throw new Error('加载应用数据失败');
-        }
-        const data = await response.json();
-        apps = data; // 更新全局变量
-        renderApps(apps); // 重新渲染页面
+        apps = await response.json();
+        renderApps(apps);
     } catch (error) {
         console.error('加载应用数据失败:', error);
         apps = [];
-        renderApps(apps); // 即使出错也要渲染空列表
     }
 }
 
