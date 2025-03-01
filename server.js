@@ -8,12 +8,8 @@ let appsData = { apps: [] };
 
 // 启用 CORS 和 JSON 解析中间件
 app.use(cors());
-app.use(express.json());
-
-// 错误处理中间件
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ message: '服务器内部错误' });
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 });
 
 // 读取应用数据
@@ -71,6 +67,23 @@ app.delete('/api/apps/:index', (req, res) => {
         console.error('删除应用失败:', error);
         res.status(500).json({ message: '删除应用失败' });
     }
+});
+
+// 错误处理中间件 - 放在所有路由之后
+app.use((err, req, res, next) => {
+    console.error('服务器错误:', err);
+    res.status(500).json({
+        status: 'error',
+        message: err.message || '服务器内部错误'
+    });
+});
+
+// 处理 404 错误
+app.use((req, res) => {
+    res.status(404).json({
+        status: 'error',
+        message: '请求的资源不存在'
+    });
 });
 
 // 导出应用实例
