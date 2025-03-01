@@ -3,7 +3,7 @@ import { config } from './data.js';
 // 从服务器加载应用数据
 async function loadAppsFromServer() {
     try {
-        const response = await fetch('http://localhost:3000/api/apps');
+        const response = await fetch('/api/apps');
         apps = await response.json();
         renderApps(apps);
     } catch (error) {
@@ -15,7 +15,7 @@ async function loadAppsFromServer() {
 // 保存应用数据到服务器
 async function saveAppToServer(newApp) {
     try {
-        const response = await fetch('http://localhost:3000/api/apps', {
+        const response = await fetch('/api/apps', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -130,7 +130,7 @@ async function deleteApp(index) {
 
     if (confirm('确定要删除这个应用吗？')) {
         try {
-            const response = await fetch(`http://localhost:3000/api/apps/${index}`, {
+            const response = await fetch(`/api/apps/${index}`, {
                 method: 'DELETE'
             });
             if (!response.ok) {
