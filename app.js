@@ -128,7 +128,7 @@ function verifyPassword(action) {
 }
 
 // 删除应用
-async function deleteApp(index) {
+async function deleteApp(appName) {
     const isValid = await verifyPassword('delete');
     if (!isValid) {
         alert('密码错误！');
@@ -137,7 +137,7 @@ async function deleteApp(index) {
 
     if (confirm('确定要删除这个应用吗？')) {
         try {
-            const response = await fetch(`${getBaseUrl()}/api/apps/${index}`, {
+            const response = await fetch(`${getBaseUrl()}/api/apps/${appName}`, {
                 method: 'DELETE'
             });
             if (!response.ok) {
@@ -177,7 +177,7 @@ function renderApps(appsToRender) {
             <p class="app-info">大小: ${app.size} | 上传时间: ${app.uploadTime}</p>
             <div class="app-buttons">
                 <button class="download-btn" onclick="window.open('${app.downloadUrl}', '_blank')">下载</button>
-                <button class="delete-btn" onclick="deleteApp(${index})">删除</button>
+                <button class="delete-btn" onclick="deleteApp('${app.name}')">删除</button>
             </div>
         `;
         appGrid.appendChild(appCard);
