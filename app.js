@@ -1,9 +1,16 @@
 import { config } from './data.js';
 
+// 获取API基础URL
+const getBaseUrl = () => {
+    // 在生产环境中使用相对路径，这样会自动使用当前域名
+    // 在开发环境中使用完整的localhost地址
+    return process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3000';
+};
+
 // 从服务器加载应用数据
 async function loadAppsFromServer() {
     try {
-        const response = await fetch('/api/apps');
+        const response = await fetch(`${getBaseUrl()}/api/apps`);
         apps = await response.json();
         renderApps(apps);
     } catch (error) {
@@ -15,7 +22,7 @@ async function loadAppsFromServer() {
 // 保存应用数据到服务器
 async function saveAppToServer(newApp) {
     try {
-        const response = await fetch('/api/apps', {
+        const response = await fetch(`${getBaseUrl()}/api/apps`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -130,7 +137,7 @@ async function deleteApp(index) {
 
     if (confirm('确定要删除这个应用吗？')) {
         try {
-            const response = await fetch(`/api/apps/${index}`, {
+            const response = await fetch(`${getBaseUrl()}/api/apps/${index}`, {
                 method: 'DELETE'
             });
             if (!response.ok) {
