@@ -2,9 +2,9 @@ import { config } from './data.js';
 
 // 获取API基础URL
 const getBaseUrl = () => {
-    // 在生产环境中使用相对路径，这样会自动使用当前域名
-    // 在开发环境中使用完整的localhost地址
-    return process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3000';
+    // 使用window.location.hostname判断环境
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    return isLocalhost ? 'http://localhost:3000' : '';
 };
 
 // 从服务器加载应用数据
