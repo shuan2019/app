@@ -68,7 +68,7 @@
     </div>
 
     <script type="module">
-        import { openUploadModal, closeUploadModal, uploadApp, downloadApp, deleteApp, searchApps, searchIcons, selectIcon } from './app.js';
+        import { openUploadModal, closeUploadModal, uploadApp, deleteApp, searchApps, searchIcons, selectIcon } from './app.js';
         import { apps as defaultApps } from './data.js';
 
         // 设置默认应用数据到全局作用域
@@ -78,7 +78,6 @@
         window.openUploadModal = openUploadModal;
         window.closeUploadModal = closeUploadModal;
         window.submitApp = uploadApp;
-        window.downloadApp = downloadApp;
         window.deleteApp = deleteApp;
         window.searchApps = searchApps;
         window.searchIcons = searchIcons;

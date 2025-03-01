@@ -1,24 +1,39 @@
 import { config } from './data.js';
 
-let isAuthenticated = false;
-let apps = [];
-
-// 从本地存储加载应用数据
-function loadAppsFromStorage() {
-    const storedApps = localStorage.getItem('apps');
-    if (storedApps) {
-        apps = JSON.parse(storedApps);
-    } else {
-        // 如果本地存储为空，使用默认应用数据
-        apps = window.defaultApps || [];
-        saveAppsToStorage();
+// 从服务器加载应用数据
+async function loadAppsFromServer() {
+    try {
+        const response = await fetch('http://localhost:3000/api/apps');
+        apps = await response.json();
+        renderApps(apps);
+    } catch (error) {
+        console.error('加载应用数据失败:', error);
+        apps = [];
     }
 }
 
-// 保存应用数据到本地存储
-function saveAppsToStorage() {
-    localStorage.setItem('apps', JSON.stringify(apps));
+// 保存应用数据到服务器
+async function saveAppToServer(newApp) {
+    try {
+        const response = await fetch('http://localhost:3000/api/apps', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newApp)
+        });
+        if (!response.ok) {
+            throw new Error('保存应用失败');
+        }
+        await loadAppsFromServer(); // 重新加载数据
+    } catch (error) {
+        console.error('保存应用数据失败:', error);
+        alert('保存应用数据失败！');
+    }
 }
+
+let isAuthenticated = false;
+let apps = [];
 
 // 打开上传模态框
 async function openUploadModal() {
@@ -51,9 +66,7 @@ async function submitApp() {
         uploadTime: new Date().toLocaleDateString()
     };
 
-    apps.push(newApp);
-    saveAppsToStorage();
-    renderApps(apps);
+    await saveAppToServer(newApp);
     closeUploadModal();
     alert('应用上传成功！');
 
@@ -104,70 +117,32 @@ function verifyPassword(action) {
             closeModal();
             resolve(false);
         });
-
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                confirmBtn.click();
-            }
-        });
-
-        input.focus();
     });
 }
 
-// 下载应用
-function downloadApp(appName) {
-    const app = apps.find(a => a.name === appName);
-    if (app) {
-        window.location.href = app.downloadUrl;
-    }
-}
-
 // 删除应用
-async function deleteApp(appName) {
+async function deleteApp(index) {
     const isValid = await verifyPassword('delete');
     if (!isValid) {
         alert('密码错误！');
         return;
     }
 
-    try {
-        const response = await fetch(`http://localhost:3000/api/apps/${appName}`, {
-            method: 'DELETE'
-        });
-        if (!response.ok) {
-            throw new Error('删除应用失败');
+    if (confirm('确定要删除这个应用吗？')) {
+        try {
+            const response = await fetch(`http://localhost:3000/api/apps/${index}`, {
+                method: 'DELETE'
+            });
+            if (!response.ok) {
+                throw new Error('删除应用失败');
+            }
+            await loadAppsFromServer(); // 重新加载数据
+            alert('应用删除成功！');
+        } catch (error) {
+            console.error('删除应用失败:', error);
+            alert('删除应用失败！');
         }
-        await loadAppsFromServer(); // 重新加载最新数据
-        alert('应用删除成功！');
-    } catch (error) {
-        console.error('删除应用失败:', error);
-        alert('删除应用失败，请检查网络连接');
     }
-}
-
-// 渲染应用列表
-function renderApps(appsToRender) {
-    const appGrid = document.getElementById('appGrid');
-    appGrid.innerHTML = '';
-    
-    appsToRender.forEach(app => {
-        const appCard = document.createElement('div');
-        appCard.className = 'app-card';
-        appCard.innerHTML = `
-            <img src="${app.icon}" alt="${app.name}" class="app-icon">
-            <div class="app-name">${app.name}</div>
-            <div class="app-description">${app.description}</div>
-            <div class="app-info">
-                <div>上传时间: ${app.uploadTime}</div>
-            </div>
-            <div class="app-buttons">
-                <button class="download-btn" onclick="downloadApp('${app.name}')">下载应用</button>
-                <button class="delete-btn" onclick="deleteApp('${app.name}')">删除应用</button>
-            </div>
-        `;
-        appGrid.appendChild(appCard);
-    });
 }
 
 // 搜索应用
@@ -179,6 +154,40 @@ function searchApps() {
     );
     renderApps(filteredApps);
 }
+
+// 渲染应用列表
+function renderApps(appsToRender) {
+    const appGrid = document.getElementById('appGrid');
+    appGrid.innerHTML = '';
+
+    appsToRender.forEach((app, index) => {
+        const appCard = document.createElement('div');
+        appCard.className = 'app-card';
+        appCard.innerHTML = `
+            <img src="${app.icon}" alt="${app.name}" class="app-icon">
+            <h3 class="app-name">${app.name}</h3>
+            <p class="app-description">${app.description}</p>
+            <p class="app-info">大小: ${app.size} | 上传时间: ${app.uploadTime}</p>
+            <div class="app-buttons">
+                <button class="download-btn" onclick="window.open('${app.downloadUrl}', '_blank')">下载</button>
+                <button class="delete-btn" onclick="deleteApp(${index})">删除</button>
+            </div>
+        `;
+        appGrid.appendChild(appCard);
+    });
+}
+
+// 页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', () => {
+    loadAppsFromServer();
+});
+
+// 导出需要的函数
+window.openUploadModal = openUploadModal;
+window.closeUploadModal = closeUploadModal;
+window.submitApp = submitApp;
+window.deleteApp = deleteApp;
+window.searchApps = searchApps;
 
 // 搜索图标
 async function searchIcons() {
@@ -232,7 +241,6 @@ export {
     openUploadModal,
     closeUploadModal,
     submitApp as uploadApp,
-    downloadApp,
     deleteApp,
     searchApps,
     searchIcons,
